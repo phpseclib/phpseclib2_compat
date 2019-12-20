@@ -1,0 +1,24 @@
+{
+    "name": "phpseclib/phpseclib2_compat",
+    "description": "phpseclib 2.0 polyfill built with phpseclib 3.0",
+    "type": "library",
+    "homepage": "https://github.com/phpseclib/phpseclib2_compat",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jim Wigginton",
+            "email": "terrafrost@php.net",
+            "role": "Lead Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/phpseclib/phpseclib2_compat/issues",
+        "source": "https://github.com/phpseclib/phpseclib2_compat"
+    },
+    "require": {
+        "phpseclib/phpseclib": "3.0.x-dev"
+    },
+    "autoload": {
+        "psr-4": {"phpseclib\\": "src/"}
+    }
+}
