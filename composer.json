@@ -15,6 +15,7 @@
         "issues": "https://github.com/phpseclib/phpseclib2_compat/issues",
         "source": "https://github.com/phpseclib/phpseclib2_compat"
     },
+    "minimum-stability": "dev",
     "require": {
         "phpseclib/phpseclib": "3.0.x-dev"
     },
