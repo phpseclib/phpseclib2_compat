@@ -17,7 +17,7 @@
     },
     "provide": {
         "phpseclib/phpseclib": "2.0.23"
-    }
+    },
     "require": {
         "phpseclib/phpseclib": "3.0.x-dev"
     },
