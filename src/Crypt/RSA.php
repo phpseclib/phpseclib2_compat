@@ -779,13 +779,13 @@ class RSA
     }
 
     /**
-     * Returns a private key object
+     * Returns a public key object
      *
      * @access public
-     * @return PrivateKey|false
+     * @return AsymmetricKey|false
      */
-    public function getPrivateKeyObject()
+    public function getKeyObject()
     {
-        return $this->key instanceof PrivateKey ? $this->key : false;
+        return $this->key;
     }
 }
