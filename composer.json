@@ -21,6 +21,9 @@
     "require": {
         "phpseclib/phpseclib": "3.0.x-dev"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^4.8.35|^5.7|^6.0"
+    },
     "autoload": {
         "psr-4": {"phpseclib\\": "src/"}
     }

@@ -1,0 +1,37 @@
+language: php
+
+dist: xenial
+
+php:
+  - 5.6
+  - 7.0
+  - 7.1
+  - 7.2
+  - 7.3
+  - 7.4
+  - nightly
+
+before_install: true
+
+matrix:
+  allow_failures:
+    - php: nightly
+
+install:
+  - wget http://ftp.gnu.org/gnu/parallel/parallel-20170822.tar.bz2
+  - tar -xvjf parallel*
+  - cd parallel*
+  - ./configure
+  - make
+  - sudo make install
+  - cd ..
+  - eval `ssh-agent -s`
+  - travis/setup-secure-shell.sh
+  - sh -c "if [ '$TRAVIS_PHP_VERSION' != 'hhvm' -a `php -r "echo (int) version_compare(PHP_VERSION, '7.0', '<');"` = "1" ]; then travis/install-php-extensions.sh; fi"
+  - travis/setup-composer.sh
+
+script:
+  - git clone -b 2.0 --single-branch https://github.com/phpseclib/phpseclib.git temp
+  - mv temp/tests tests
+  - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.5' ]; then vendor/bin/phing -f build/build.xml sniff; fi"
+  - travis/run-phpunit.sh
