@@ -61,6 +61,65 @@ use phpseclib3\Math\BigInteger as BigInteger2;
  */
 class BigInteger
 {
+    /**#@+
+     * Array constants
+     *
+     * Rather than create a thousands and thousands of new BigInteger objects in repeated function calls to add() and
+     * multiply() or whatever, we'll just work directly on arrays, taking them in as parameters and returning them.
+     *
+     * @access private
+     */
+    /**
+     * $result[self::VALUE] contains the value.
+     */
+    const VALUE = 0;
+    /**
+     * $result[self::SIGN] contains the sign.
+     */
+    const SIGN = 1;
+    /**#@-*/
+
+    /**#@+
+     * @access private
+     * @see BigInteger::_montgomery()
+     * @see BigInteger::_barrett()
+     */
+    /**
+     * Cache constants
+     *
+     * $cache[self::VARIABLE] tells us whether or not the cached data is still valid.
+     */
+    const VARIABLE = 0;
+    /**
+     * $cache[self::DATA] contains the cached data.
+     */
+    const DATA = 1;
+    /**#@-*/
+
+    /**#@+
+     * Mode constants.
+     *
+     * @access private
+     * @see BigInteger::__construct()
+     */
+    /**
+     * To use the pure-PHP implementation
+     */
+    const MODE_INTERNAL = 1;
+    /**
+     * To use the BCMath library
+     *
+     * (if enabled; otherwise, the internal implementation will be used)
+     */
+    const MODE_BCMATH = 2;
+    /**
+     * To use the GMP library
+     *
+     * (if present; otherwise, either the BCMath or the internal implementation will be used)
+     */
+    const MODE_GMP = 3;
+    /**#@-*/
+
     /**
      * The BigInteger object
      *
@@ -89,9 +148,9 @@ class BigInteger
      * @return \phpseclib\Math\BigInteger
      * @access public
      */
-    public function __construct()
+    public function __construct($x = 0, $base = 10)
     {
-        $this->bigint = new BigInteger2;
+        $this->bigint = new BigInteger2($x, $base);
     }
 
     /**
@@ -102,7 +161,7 @@ class BigInteger
     public function __call($name, $args)
     {
         foreach ($args as &$arg) {
-            if ($arg instanceof BigInteger2) {
+            if ($arg instanceof BigInteger) {
                 $arg = $arg->bigint;
             }
         }
@@ -115,6 +174,32 @@ class BigInteger
         $temp->bigint = $result;
 
         return $temp;
+    }
+
+    /**
+     *  __toString() magic method
+     *
+     * Will be called, automatically, if you're supporting just PHP5.  If you're supporting PHP4, you'll need to call
+     * toString().
+     *
+     * @access public
+     * @internal Implemented per a suggestion by Techie-Michael - thanks!
+     */
+    public function __toString()
+    {
+        return $this->bigint->__toString();
+    }
+
+    /**
+     *  __debugInfo() magic method
+     *
+     * Will be called, automatically, when print_r() or var_dump() are called
+     *
+     * @access public
+     */
+    public function __debugInfo()
+    {
+        return $this->bigint->__debugInfo();
     }
 
     /**
@@ -162,6 +247,22 @@ class BigInteger
             $arg1->bigint,
             $arg2 instanceof BigInteger ? $arg2->bigint : $this->bigint
         );
+        return $temp;
+    }
+
+    /**
+     * Logical Exclusive-Or
+     *
+     * See https://github.com/phpseclib/phpseclib/issues/1245 for more context
+     *
+     * @param \phpseclib\Math\BigInteger $x
+     * @access public
+     * @return \phpseclib\Math\BigInteger
+     */
+    public function bitwise_xor($x)
+    {
+        $temp = new static;
+        $temp->bigint = $this->bigint->abs()->bitwise_xor($x->bigint->abs());
         return $temp;
     }
 }

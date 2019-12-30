@@ -59,5 +59,6 @@ class DES extends Base
      */
     public function setKeyLength($length)
     {
+        parent::setKeyLength(64);
     }
 }

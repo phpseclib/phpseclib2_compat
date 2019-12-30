@@ -45,6 +45,34 @@ namespace phpseclib\Crypt;
 class RC2 extends Base
 {
     /**
+     * Default Constructor.
+     *
+     * Determines whether or not the mcrypt extension should be used.
+     *
+     * $mode could be:
+     *
+     * - self::MODE_ECB
+     *
+     * - self::MODE_CBC
+     *
+     * - self::MODE_CTR
+     *
+     * - self::MODE_CFB
+     *
+     * - self::MODE_OFB
+     *
+     * If not explicitly set, self::MODE_CBC will be used.
+     *
+     * @param int $mode
+     * @access public
+     */
+    public function __construct($mode = self::MODE_CBC)
+    {
+        parent::__construct($mode);
+        $this->key_length = 8;
+    }
+
+    /**
      * Sets the key length.
      *
      * Valid key lengths are 8 to 1024.
@@ -57,10 +85,49 @@ class RC2 extends Base
     public function setKeyLength($length)
     {
         if ($length < 8) {
-            $length = 1;
+            $length = 8;
         } elseif ($length > 1024) {
-            $length = 128;
+            $length = 1024;
         }
         parent::setKeyLength($length);
+    }
+
+    /**
+     * Setup IV and key
+     */
+    protected function setup()
+    {
+        if ($this->explicit_key_length) {
+            $this->cipher->setKeyLength($this->key_length);
+        }
+        $this->cipher->setKey($this->key);
+        if (!$this->ivSet) {
+            $this->setIV('');
+        }
+        $this->changed = false;
+    }
+
+    /**
+     * Sets the key.
+     *
+     * Keys can be of any length. RC2, itself, uses 8 to 1024 bit keys (eg.
+     * strlen($key) <= 128), however, we only use the first 128 bytes if $key
+     * has more then 128 bytes in it, and set $key to a single null byte if
+     * it is empty.
+     *
+     * If the key is not explicitly set, it'll be assumed to be a single
+     * null byte.
+     *
+     * @see \phpseclib\Crypt\Base::setKey()
+     * @access public
+     * @param string $key
+     * @param int $t1 optional Effective key length in bits.
+     */
+    function setKey($key, $t1 = 0)
+    {
+        parent::setKey($key);
+        if ($t1) {
+            $this->setKeyLength($t1);
+        }
     }
 }

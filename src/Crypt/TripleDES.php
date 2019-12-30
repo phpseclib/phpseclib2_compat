@@ -88,8 +88,8 @@ class TripleDES extends Base
     public function __construct($mode = self::MODE_CBC)
     {
         if ($mode == self::MODE_3CBC) {
-            $this->cipher = new phpseclib3\Crypt\TripleDES('3cbc');
-            $this->key_length = $this->cipher->getKeyLengthInBytes();
+            $this->cipher = new \phpseclib3\Crypt\TripleDES('3cbc');
+            $this->key_length = $this->cipher->getKeyLength();
             return;
         }
         parent::__construct($mode);
@@ -105,16 +105,15 @@ class TripleDES extends Base
      */
     public function setKeyLength($length)
     {
-        $length >>= 3;
         switch (true) {
-            case $length <= 8:
-                $length = 8;
+            case $length <= 64:
+                $length = 64;
                 break;
-            case $length <= 16:
-                $length = 16;
+            case $length <= 128:
+                $length = 128;
                 break;
             default:
-                $length = 24;
+                $length = 192;
         }
 
         parent::setKeyLength($length);

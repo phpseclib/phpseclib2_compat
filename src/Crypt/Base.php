@@ -140,7 +140,7 @@ abstract class Base
      * @var string
      * @access private
      */
-    private $key = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+    protected $key = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 
     /**
      * The Key Length (in bytes)
@@ -149,7 +149,7 @@ abstract class Base
      * @var int
      * @access private
      */
-    protected $key_length = 16;
+    protected $key_length = 128;
 
     /**
      * Does internal cipher state need to be (re)initialized?
@@ -159,6 +159,22 @@ abstract class Base
      * @access private
      */
     private $changed = true;
+
+    /**
+     * Has the IV been set?
+     *
+     * @var bool
+     * @access private
+     */
+    protected $ivSet = false;
+
+    /**
+     * Has the key length been explictly set?
+     *
+     * @var bool
+     * @access private
+     */
+    protected $explicit_key_length = false;
 
     /**
      * Default Constructor.
@@ -197,9 +213,10 @@ abstract class Base
         if (!isset($map[$mode])) {
             $mode = self::MODE_CBC;
         }
-        $class = "phpseclib3\\Crypt\\" . basename(static::class);
+        $class = new \ReflectionClass(static::class);
+        $class = "phpseclib3\\Crypt\\" . $class->getShortName();
         $this->cipher = new $class($map[$mode]);
-        $this->key_length = $this->cipher->getKeyLength() >> 3;
+        $this->key_length = $this->cipher->getKeyLength();
     }
 
     /**
@@ -214,6 +231,8 @@ abstract class Base
      */
     public function setIV($iv)
     {
+        $this->ivSet = true;
+
         if (!$this->cipher->usesIV()) {
             return;
         }
@@ -239,6 +258,7 @@ abstract class Base
         // algorithms that have a fixed key length should override this with a method that does nothing
         $this->changed = true;
         $this->key_length = $length;
+        $this->explicit_key_length = true;
     }
 
     /**
@@ -280,6 +300,9 @@ abstract class Base
     public function setKey($key)
     {
         $this->key = $key;
+        if (!$this->explicit_key_length) {
+            $this->key_length = strlen($key) << 3;
+        }
         $this->changed = true;
     }
 
@@ -328,12 +351,7 @@ abstract class Base
     public function encrypt($plaintext)
     {
         if ($this->changed) {
-            // we set this just in case it was already set to anything via setPassword()
-            $this->cipher->setKeyLength($this->key_length << 3);
-
-            $key = str_pad(substr($key, 0, $this->key_length), $this->key_length, "\0");
-            $this->cipher->setKey($key);
-            $this->changed = false;
+            $this->setup();
         }
 
         try {
@@ -360,12 +378,7 @@ abstract class Base
     public function decrypt($ciphertext)
     {
         if ($this->changed) {
-            // we set this just in case it was already set to anything via setPassword()
-            $this->cipher->setKeyLength($this->key_length);
-
-            $key = str_pad(substr($key, 0, $this->key_length), $this->key_length, "\0");
-            $this->cipher->setKey($key);
-            $this->changed = false;
+            $this->setup();
         }
 
         try {
@@ -378,6 +391,27 @@ abstract class Base
         } catch (\Exception $e) {
             return false;
         }
+    }
+
+    /**
+     * Setup IV and key
+     */
+    protected function setup()
+    {
+        // we set this just in case it was already set to anything via setPassword()
+        $temp = $this->explicit_key_length;
+        $this->setKeyLength($this->key_length);
+        $this->explicit_key_length = $temp;
+        if ($this->explicit_key_length) {
+            $this->cipher->setKeyLength($this->key_length);
+        }
+        $key_length = $this->key_length >> 3;
+        $key = str_pad(substr($this->key, 0, $key_length), $key_length, "\0");
+        $this->cipher->setKey($key);
+        if (!$this->ivSet) {
+            $this->setIV('');
+        }
+        $this->changed = false;
     }
 
     /**
@@ -519,7 +553,7 @@ abstract class Base
     {
         static $reverseMap;
         if (!isset($reverseMap)) {
-            $reverseMap = array_flip($reverseMap);
+            $reverseMap = array_flip(self::ENGINE_MAP);
         }
         return $reverseMap[$this->cipher->getEngine()];
     }

@@ -53,9 +53,11 @@ namespace phpseclib\Crypt;
 
 use phpseclib3\Crypt\RSA as RSA2;
 use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Crypt\Common\AsymmetricKey;
 use phpseclib3\Crypt\Common\PublicKey;
 use phpseclib3\Crypt\Common\PrivateKey;
 use phpseclib3\Exception\UnsupportedAlgorithmException;
+use phpseclib3\Exception\NoKeyLoadedException;
 use phpseclib3\Crypt\Common\Formats\Keys\PuTTY;
 use phpseclib3\Crypt\Common\Formats\Keys\OpenSSH;
 
@@ -249,7 +251,7 @@ class RSA
      * @var int
      * @access public
      */
-    private $publicKeyFormat = self::PUBLIC_FORMAT_PKCS8;
+    private $publicKeyFormat = self::PUBLIC_FORMAT_PKCS1;
 
     /**
      * Public key comment field.
@@ -258,6 +260,46 @@ class RSA
      * @access private
      */
     private $comment = 'phpseclib-generated-key';
+
+    /**
+     * Encryption mode
+     *
+     * @var int
+     * @access private
+     */
+    private $encryptionMode = self::ENCRYPTION_OAEP;
+
+    /**
+     * Signature mode
+     *
+     * @var int
+     * @access private
+     */
+    private $signatureMode = self::SIGNATURE_PSS;
+
+    /**
+     * Hash name
+     *
+     * @var string
+     * @access private
+     */
+    private $hash = 'sha1';
+
+    /**
+     * Hash function for the Mask Generation Function
+     *
+     * @var string
+     * @access private
+     */
+    private $mgfHash = 'sha1';
+
+    /**
+     * Length of salt
+     *
+     * @var int
+     * @access private
+     */
+    private $sLen;
 
     /**
      * The constructor
@@ -336,8 +378,30 @@ class RSA
      */
     public function loadKey($key)
     {
-        $this->key = PublicKeyLoader::load($key, $this->password);
-        $this->origKey = $key;
+        if ($key instanceof AsymmetricKey) {
+            $this->key = $key;
+        } else if ($key instanceof RSA) {
+            $this->key = $key->key;
+        } else {
+            try {
+                $this->key = PublicKeyLoader::load($key, $this->password);
+            } catch (NoKeyLoadedException $e) {
+                $this->key = $this->origKey = null;
+                return false;
+            }
+            $this->origKey = $key;
+        }
+
+        // with phpseclib 2.0 loading a key does not reset any of the following
+        // so we'll need to preserve the old settings whenever a new key is loaded
+        // with this shim
+        $this->setEncryptionMode($this->encryptionMode);
+        //$this->setSignatureMode($this->signatureMode);
+        $this->setHash($this->hash);
+        $this->setMGFHash($this->mgfHash);
+        $this->setSaltLength($this->sLen);
+
+        return true;
     }
 
     /**
@@ -410,7 +474,11 @@ class RSA
             $this->key = $this->key->asPrivateKey();
         }
 
-        $key = PublicKeyLoader::load($key);
+        try {
+            $key = PublicKeyLoader::load($key);
+        } catch (NoKeyLoadedException $e) {
+            return false;
+        }
         if ($key instanceof RSA2) { 
             $this->key = $key instanceof PublicKey ? $key->asPrivateKey() : $key;
             return true;
@@ -431,17 +499,17 @@ class RSA
      * @param string $key
      * @param int $type optional
      */
-    public function getPublicKey($type = self::PUBLIC_FORMAT_PKCS1)
+    public function getPublicKey($type = self::PUBLIC_FORMAT_PKCS8)
     {
         PuTTY::setComment($this->comment);
         OpenSSH::setComment($this->comment);
 
         if ($this->key instanceof PrivateKey) {
-            return $this->key->getPublicKey()->toString(self::const2str($const));
+            return $this->key->getPublicKey()->toString(self::const2str($type));
         }
 
         if ($this->key instanceof PublicKey) {
-            return $this->key->toString(self::const2str($const));
+            return $this->key->toString(self::const2str($type));
         }
 
         return false;
@@ -485,7 +553,7 @@ class RSA
         OpenSSH::setComment($this->comment);
 
         if ($this->key instanceof PrivateKey) {
-            return $this->key->toString(self::const2str($const));
+            return $this->key->toString(self::const2str($type));
         }
 
         return false;
@@ -566,10 +634,13 @@ class RSA
      */
     public function setHash($hash)
     {
-        try {
-            $this->key = $this->key->withHash($hash);
-        } catch (UnsupportedAlgorithmException $e) {
-            $this->key = $this->key->withHash('sha1');
+        $this->hash = $hash;
+        if ($this->key instanceof AsymmetricKey) {
+            try {
+                $this->key = $this->key->withHash($hash);
+            } catch (UnsupportedAlgorithmException $e) {
+                $this->key = $this->key->withHash('sha1');
+            }
         }
     }
 
@@ -584,10 +655,13 @@ class RSA
      */
     public function setMGFHash($hash)
     {
-        try {
-            $this->key = $this->key->withMGFHash($hash);
-        } catch (UnsupportedAlgorithmException $e) {
-            $this->key = $this->key->withMGFHash('sha1');
+        $this->mgfHash = $hash;
+        if ($this->key instanceof RSA2) {
+            try {
+                $this->key = $this->key->withMGFHash($hash);
+            } catch (UnsupportedAlgorithmException $e) {
+                $this->key = $this->key->withMGFHash('sha1');
+            }
         }
     }
 
@@ -604,7 +678,10 @@ class RSA
      */
     public function setSaltLength($sLen)
     {
-        $this->key = $this->key->withSaltLength($sLen);
+        $this->sLen = $sLen;
+        if ($this->key instanceof RSA2) {
+            $this->key = $this->key->withSaltLength($sLen);
+        }
     }
 
     /**
@@ -617,7 +694,13 @@ class RSA
      */
     public function setEncryptionMode($mode)
     {
-        $this->key = $this->key->withPadding(self::enc2pad($mode));
+        $this->encryptionMode = $mode;
+        if ($this->key instanceof RSA2) {
+            $this->key = $this->key->withPadding(
+                self::enc2pad($this->encryptionMode) |
+                self::sig2pad($this->signatureMode)
+            );
+        }
     }
 
     /**
@@ -630,7 +713,13 @@ class RSA
      */
     public function setSignatureMode($mode)
     {
-        $this->key = $this->key->withPadding(self::sig2pad($mode));
+        $this->signatureMode = $mode;
+        if ($this->key instanceof RSA2) {
+            $this->key = $this->key->withPadding(
+                self::enc2pad($this->encryptionMode) |
+                self::sig2pad($this->signatureMode)
+            );
+        }
     }
 
     /**
@@ -737,7 +826,7 @@ class RSA
     public function decrypt($ciphertext)
     {
         if ($this->key instanceof PrivateKey) {
-            return $this->key->decrypt($plaintext);
+            return $this->key->decrypt($ciphertext);
         }
 
         return false;

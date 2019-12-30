@@ -57,11 +57,9 @@ class Blowfish extends Base
     public function setKeyLength($length)
     {
         if ($length < 32) {
-            $length = 4;
+            $length = 32;
         } elseif ($length > 448) {
-            $length = 56;
-        } else {
-            $length = $length >> 3;
+            $length = 448;
         }
         parent::setKeyLength($length);
     }

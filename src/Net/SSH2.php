@@ -69,7 +69,7 @@ class SSH2 extends \phpseclib3\Net\SSH2
     {
         foreach ($args as &$arg) {
             if ($arg instanceof RSA) {
-                $arg = $arg->getPrivateKeyObject();
+                $arg = $arg->getKeyObject();
                 if (!$arg) {
                     return false;
                 }

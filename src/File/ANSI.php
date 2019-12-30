@@ -27,6 +27,6 @@ namespace phpseclib\File;
  * @author  Jim Wigginton <terrafrost@php.net>
  * @access  public
  */
-class ANSI extends phpseclib3\File\ANSI
+class ANSI extends \phpseclib3\File\ANSI
 {
 }

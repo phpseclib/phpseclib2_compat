@@ -64,11 +64,9 @@ class RC4 extends Base
     public function setKeyLength($length)
     {
         if ($length < 8) {
-            $length = 1;
+            $length = 8;
         } elseif ($length > 2048) {
-            $length = 256;
-        } else {
-            $length >>= 3;
+            $length = 2048;
         }
         parent::setKeyLength($length);
     }

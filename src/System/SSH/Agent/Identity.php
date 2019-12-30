@@ -14,7 +14,7 @@
  * @internal  See http://api.libssh.org/rfc/PROTOCOL.agent
  */
 
-namespace phpseclib\Net;
+namespace phpseclib\System\SSH\Agent;
 
 /**
  * Pure-PHP ssh-agent client identity object

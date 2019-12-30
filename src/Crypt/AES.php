@@ -72,13 +72,13 @@ class AES extends Base
     {
         switch (true) {
             case $length <= 128:
-                $length = 16;
+                $length = 128;
                 break;
             case $length <= 192:
-                $length = 24;
+                $length = 192;
                 break;
             default:
-                $length = 32;
+                $length = 256;
         }
         parent::setKeyLength($length);
     }
