@@ -57,6 +57,7 @@ use phpseclib3\Crypt\Common\AsymmetricKey;
 use phpseclib3\Crypt\Common\PublicKey;
 use phpseclib3\Crypt\Common\PrivateKey;
 use phpseclib3\Exception\UnsupportedAlgorithmException;
+use phpseclib3\Exception\UnsupportedFormatException;
 use phpseclib3\Exception\NoKeyLoadedException;
 use phpseclib3\Crypt\Common\Formats\Keys\PuTTY;
 use phpseclib3\Crypt\Common\Formats\Keys\OpenSSH;
@@ -420,7 +421,13 @@ class RSA
         }
 
         if ($this->key instanceof PrivateKey) {
-            return $this->key->toString(self::const2str($this->privateKeyFormat));
+            try {
+                return $this->key->toString(self::const2str($this->privateKeyFormat));
+            } catch (UnsupportedFormatException $e) {
+                if ($this->password) {
+                    return $this->key->withPassword()->toString(self::const2str($this->privateKeyFormat));
+                }
+            }
         }
 
         return '';
@@ -553,7 +560,14 @@ class RSA
         OpenSSH::setComment($this->comment);
 
         if ($this->key instanceof PrivateKey) {
-            return $this->key->toString(self::const2str($type));
+            try {
+                return $this->key->toString(self::const2str($this->privateKeyFormat));
+            } catch (UnsupportedFormatException $e) {
+                if ($this->password) {
+                    return $this->key->withPassword()->toString(self::const2str($this->privateKeyFormat));
+                }
+            }
+
         }
 
         return false;
