@@ -65,4 +65,61 @@ class SFTP extends \phpseclib3\Net\SFTP
 
         return parent::login($username, ...$args);
     }
+
+    /**
+     * Parse Attributes
+     *
+     * See '7.  File Attributes' of draft-ietf-secsh-filexfer-13 for more info.
+     *
+     * @param string $response
+     * @return array
+     * @access private
+     */
+    protected function parseAttributes(&$response)
+    {
+        $r = parent::parseAttributes($response);
+        if (isset($r['mode'])) {
+            $r['permissions'] = $r['mode'];
+        }
+        return $r;
+    }
+
+    /**
+     * Defines how nlist() and rawlist() will be sorted - if at all.
+     *
+     * If sorting is enabled directories and files will be sorted independently with
+     * directories appearing before files in the resultant array that is returned.
+     *
+     * Any parameter returned by stat is a valid sort parameter for this function.
+     * Filename comparisons are case insensitive.
+     *
+     * Examples:
+     *
+     * $sftp->setListOrder('filename', SORT_ASC);
+     * $sftp->setListOrder('size', SORT_DESC, 'filename', SORT_ASC);
+     * $sftp->setListOrder(true);
+     *    Separates directories from files but doesn't do any sorting beyond that
+     * $sftp->setListOrder();
+     *    Don't do any sort of sorting
+     *
+     * @param $args[]
+     * @access public
+     */
+    public function setListOrder(...$args)
+    {
+        $this->sortOptions = [];
+        if (empty($args)) {
+            return;
+        }
+        $len = count($args) & 0x7FFFFFFE;
+        for ($i = 0; $i < $len; $i+=2) {
+            if ($args[$i] == 'permissions') {
+                $args[$i] = 'mode';
+            }
+            $this->sortOptions[$args[$i]] = $args[$i + 1];
+        }
+        if (!count($this->sortOptions)) {
+            $this->sortOptions = ['bogus' => true];
+        }
+    }
 }
