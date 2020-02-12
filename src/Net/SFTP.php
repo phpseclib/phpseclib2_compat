@@ -122,4 +122,18 @@ class SFTP extends \phpseclib3\Net\SFTP
             $this->sortOptions = ['bogus' => true];
         }
     }
+
+    /**
+     * Returns the file size, in bytes, or false, on failure
+     *
+     * Files larger than 4GB will show up as being exactly 4GB.
+     *
+     * @param string $filename
+     * @return mixed
+     * @access public
+     */
+    public function size($filename)
+    {
+        return $this->filesize($filename);
+    }
 }
