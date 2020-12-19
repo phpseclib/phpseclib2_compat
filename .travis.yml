@@ -9,6 +9,7 @@ php:
   - 7.2
   - 7.3
   - 7.4
+  - 8.0
   - nightly
 
 before_install: true
@@ -26,17 +27,18 @@ install:
   - sudo make install
   - cd ..
   - eval `ssh-agent -s`
-  - travis/setup-secure-shell.sh
-  - travis/setup-composer.sh
-
-script:
   - git clone -b 2.0 --single-branch https://github.com/phpseclib/phpseclib.git temp
   - mv temp/tests tests
   - rm tests/Functional/Net/SCPSSH2UserStoryTest.php
   - rm tests/Unit/Net/SSH1Test.php
-  - rm tests/Unit/Net/SSH2Test.php
+  - rm tests/Unit/Net/SSH2UnitTest.php
   - rm tests/Unit/Math/BigInteger/InternalTest.php
   - sed -i 's/%s\/..\/phpseclib\/%s/%s\/..\/src\/%s/g' tests/PhpseclibTestCase.php
   - sed -i 's/public function testSetPrivate()/private function skiptestSetPrivate()/g' tests/Unit/Crypt/RSA/LoadKeyTest.php
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.5' ]; then vendor/bin/phing -f build/build.xml sniff; fi"
+  - mv temp/travis travis
+  - travis/setup-secure-shell.sh
+  - travis/setup-composer.sh
+
+script:
   - travis/run-phpunit.sh
