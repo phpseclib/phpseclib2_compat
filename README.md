@@ -6,7 +6,7 @@ phpseclib 2.0 polyfill built with phpseclib 3.0
 
 ## Overview
 
-phpseclib 3.0 breaks backwards compatability with phpseclib 2.0. Most notably, public keys work completely. So let's say you wanted to use phpseclib 3.0 whilst some of your other dependencies still use phpseclib 2.0. What would you do in that instance?
+phpseclib 3.0 breaks backwards compatability with phpseclib 2.0. Most notably, public keys work completely differently. So let's say you wanted to use phpseclib 3.0 whilst some of your other dependencies still use phpseclib 2.0. What would you do in that instance?
 
 That's where phpseclib2_compat comes into play. Require phpseclib/phpseclib:~3.0 and phpseclib/phpseclib2_compat:~1.0 and you're dependencies will magically start using phpseclib 3.0 even if they don't know it.
 
