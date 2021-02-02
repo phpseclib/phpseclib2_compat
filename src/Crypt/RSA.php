@@ -61,6 +61,8 @@ use phpseclib3\Exception\UnsupportedFormatException;
 use phpseclib3\Exception\NoKeyLoadedException;
 use phpseclib3\Crypt\Common\Formats\Keys\PuTTY;
 use phpseclib3\Crypt\Common\Formats\Keys\OpenSSH;
+use phpseclib3\Math\BigInteger;
+use phpseclib\Math\BigInteger as BigInteger2;
 
 /**
  * Pure-PHP PKCS#1 compliant implementation of RSA.
@@ -385,6 +387,13 @@ class RSA
             $this->key = $key->key;
         } else {
             try {
+                if (is_array($key)) {
+                    foreach ($key as &$value) {
+                        if ($value instanceof BigInteger2) {
+                            $value = new BigInteger($value->toBytes(true), -256);
+                        }
+                    }
+                }
                 $this->key = PublicKeyLoader::load($key, $this->password);
             } catch (NoKeyLoadedException $e) {
                 $this->key = $this->origKey = null;
