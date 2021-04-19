@@ -15,7 +15,7 @@
         "issues": "https://github.com/phpseclib/phpseclib2_compat/issues",
         "source": "https://github.com/phpseclib/phpseclib2_compat"
     },
-    "provide": {
+    "replace": {
         "phpseclib/phpseclib": "2.0.30"
     },
     "require": {
