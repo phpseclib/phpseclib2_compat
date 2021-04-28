@@ -16,7 +16,7 @@
         "source": "https://github.com/phpseclib/phpseclib2_compat"
     },
     "provide": {
-        "phpseclib/phpseclib": "2.0.30"
+        "phpseclib/phpseclib": "2.0.31"
     },
     "require": {
         "phpseclib/phpseclib": "^3.0"
