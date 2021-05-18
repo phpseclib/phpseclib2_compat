@@ -57,7 +57,7 @@ class SFTP extends \phpseclib3\Net\SFTP
         foreach ($args as &$arg) {
             if ($arg instanceof RSA) {
                 $arg = $arg->getKeyObject();
-                if (!$arg instanceof \phpseclib2\Crypt\Common\PrivateKey) {
+                if (!$arg instanceof \phpseclib3\Crypt\Common\PrivateKey) {
                     return false;
                 }
             }
