@@ -35,6 +35,7 @@ install:
   - rm tests/Unit/Math/BigInteger/InternalTest.php
   - sed -i 's/%s\/..\/phpseclib\/%s/%s\/..\/src\/%s/g' tests/PhpseclibTestCase.php
   - sed -i 's/public function testSetPrivate()/private function skiptestSetPrivate()/g' tests/Unit/Crypt/RSA/LoadKeyTest.php
+  - sed -i 's/public function testOAEPWithLabel()/private function skiptestOAEPWithLabel()/g' tests/Unit/Crypt/RSA/ModeTest.php
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.5' ]; then vendor/bin/phing -f build/build.xml sniff; fi"
   - mv temp/travis travis
   - travis/setup-secure-shell.sh
