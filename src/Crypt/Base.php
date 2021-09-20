@@ -431,7 +431,7 @@ abstract class Base
      */
     public function enablePadding()
     {
-        $this->cipher->enablePaddng();
+        $this->cipher->enablePadding();
     }
 
     /**
