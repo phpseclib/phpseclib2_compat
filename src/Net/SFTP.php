@@ -63,7 +63,11 @@ class SFTP extends \phpseclib3\Net\SFTP
             }
         }
 
-        return parent::login($username, ...$args);
+        try {
+            return parent::login($username, ...$args);
+        } catch (\Exception $e) {
+            user_error($e->getMessage());
+        }
     }
 
     /**
@@ -135,5 +139,19 @@ class SFTP extends \phpseclib3\Net\SFTP
     public function size($filename)
     {
         return $this->filesize($filename);
+    }
+
+    /**
+     *  __call() magic method
+     *
+     * @access public
+     */
+    public function __call($name, $args)
+    {
+        try {
+            return parent::$name(...$args);
+        } catch (\Exception $e) {
+            user_error($e->getMessage());
+        }
     }
 }
