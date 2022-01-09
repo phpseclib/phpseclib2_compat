@@ -53,4 +53,18 @@ class Stream extends \phpseclib3\Net\SFTP\Stream
         $this->context = stream_context_create($options, $params);
         return parent::parse_path($path);
     }
+
+    /**
+     *  __call() magic method
+     *
+     * @access public
+     */
+    public function __call($name, $args)
+    {
+        try {
+            return parent::__call($name, $args);
+        } catch (\Exception $e) {
+            user_error($e->getMessage());
+        }
+    }
 }

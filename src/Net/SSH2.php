@@ -76,6 +76,24 @@ class SSH2 extends \phpseclib3\Net\SSH2
             }
         }
 
-        return parent::login($username, ...$args);
+        try {
+            return parent::login($username, ...$args);
+        } catch (\Exception $e) {
+            user_error($e->getMessage());
+        }
+    }
+
+    /**
+     *  __call() magic method
+     *
+     * @access public
+     */
+    public function __call($name, $args)
+    {
+        try {
+            return parent::$name(...$args);
+        } catch (\Exception $e) {
+            user_error($e->getMessage());
+        }
     }
 }
