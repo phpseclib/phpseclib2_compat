@@ -18,6 +18,7 @@
 namespace phpseclib\Net\SFTP;
 
 use phpseclib\Crypt\RSA;
+use phpseclib\Net\SFTP;
 
 /**
  * SFTP Stream Wrapper
@@ -45,12 +46,16 @@ class Stream extends \phpseclib3\Net\SFTP\Stream
         $scheme = parse_url($path, PHP_URL_SCHEME);
         if (isset($this->context)) {
             $options = stream_context_get_options($this->context);
-            $params = stream_context_get_params($this->context);
         }
         if (isset($options[$scheme]['privkey']) && $options[$scheme]['privkey'] instanceof RSA) {
-            $options[$scheme]['privkey'] = $options[$scheme]['privkey']->getKeyObject();
+            stream_context_set_option($this->context, $scheme, 'privKey', $options[$scheme]['privkey']->getKeyObject());
         }
-        $this->context = stream_context_create($options, $params);
+        if (isset($options[$scheme]['session']) && $options[$scheme]['session'] instanceof SFTP) {
+            stream_context_set_option($this->context, $scheme, 'session', $options[$scheme]['session']->getSFTPObject());
+        }
+        if (isset($options[$scheme]['sftp']) && $options[$scheme]['sftp'] instanceof SFTP) {
+            stream_context_set_option($this->context, $scheme, 'sftp', $options[$scheme]['sftp']->getSFTPObject());
+        }
         return parent::parse_path($path);
     }
 

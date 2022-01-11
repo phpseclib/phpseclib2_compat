@@ -52,8 +52,80 @@ namespace phpseclib\Net;
 
 use phpseclib\Crypt\RSA;
 
-class SSH2 extends \phpseclib3\Net\SSH2
+class SSH2
 {
+    /**#@+
+     * @access public
+     * @see \phpseclib\Net\SSH2::getLog()
+    */
+    /**
+     * Returns the message numbers
+     */
+    const LOG_SIMPLE = 1;
+    /**
+     * Returns the message content
+     */
+    const LOG_COMPLEX = 2;
+    /**
+     * Outputs the content real-time
+     */
+    const LOG_REALTIME = 3;
+    /**
+     * Dumps the content real-time to a file
+     */
+    const LOG_REALTIME_FILE = 4;
+    /**
+     * Make sure that the log never gets larger than this
+     */
+    const LOG_MAX_SIZE = 1048576; // 1024 * 1024
+    /**#@-*/
+
+    /**#@+
+     * @access public
+     * @see \phpseclib\Net\SSH2::read()
+    */
+    /**
+     * Returns when a string matching $expect exactly is found
+     */
+    const READ_SIMPLE = 1;
+    /**
+     * Returns when a string matching the regular expression $expect is found
+     */
+    const READ_REGEX = 2;
+    /**
+     * Returns whenever a data packet is received.
+     *
+     * Some data packets may only contain a single character so it may be necessary
+     * to call read() multiple times when using this option
+     */
+    const READ_NEXT = 3;
+    /**#@-*/
+
+    /**
+     * The SSH2 object
+     *
+     * @var \phpseclib3\File\SSH2
+     * @access private
+     */
+    private $ssh;
+
+    /**
+     * Default Constructor.
+     *
+     * $host can either be a string, representing the host, or a stream resource.
+     *
+     * @param mixed $host
+     * @param int $port
+     * @param int $timeout
+     * @see self::login()
+     * @return \phpseclib\Net\SSH2
+     * @access public
+     */
+    function __construct($host, $port = 22, $timeout = 10)
+    {
+        $this->ssh = new \phpseclib3\Net\SSH2($host, $port, $timeout);
+    }
+
     /**
      * Login
      *
@@ -77,9 +149,10 @@ class SSH2 extends \phpseclib3\Net\SSH2
         }
 
         try {
-            return parent::login($username, ...$args);
+            return $this->ssh->login($username, ...$args);
         } catch (\Exception $e) {
             user_error($e->getMessage());
+            return false;
         }
     }
 
@@ -91,7 +164,7 @@ class SSH2 extends \phpseclib3\Net\SSH2
     public function __call($name, $args)
     {
         try {
-            return parent::$name(...$args);
+            return $this->ssh->$name(...$args);
         } catch (\Exception $e) {
             user_error($e->getMessage());
         }
