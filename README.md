@@ -27,6 +27,62 @@ That'll work with phpseclib2_compat, even with an ECDSA private key, whereas in 
 
 SSH1 and SCP are not supported but those were likely never frequently used anyway.
 
+## Using the old cipher suite
+
+phpseclib 3.0 uses a different cipher suite (an expanded one) than 2.0. If this causes you issues you can use the 2.0 ciphersuite by doing this prior to calling `$ssh->login()`:
+
+```php
+$methods = [
+    'crypt' => array_intersect([
+        'arcfour256',
+        'arcfour128',
+        'aes128-ctr',
+        'aes192-ctr',
+        'aes256-ctr',
+        'twofish128-ctr',
+        'twofish192-ctr',
+        'twofish256-ctr',
+        'aes128-cbc',
+        'aes192-cbc',
+        'aes256-cbc',
+        'twofish128-cbc',
+        'twofish192-cbc',
+        'twofish256-cbc',
+        'twofish-cbc',
+        'blowfish-ctr',
+        'blowfish-cbc',
+        '3des-ctr',
+        '3des-cbc'
+    ], $ssh->getSupportedEncryptionAlgorithms()),
+    'mac' => [
+        'hmac-sha2-256',
+        'hmac-sha1-96',
+        'hmac-sha1',
+        'hmac-md5-96',
+        'hmac-md5'
+    ],
+    'comp' => ['none']
+];
+
+$ssh->setPreferredAlgorithms([
+    'kex' => [
+        'curve25519-sha256@libssh.org',
+        'diffie-hellman-group-exchange-sha256',
+        'diffie-hellman-group-exchange-sha1',
+        'diffie-hellman-group14-sha1',
+        'diffie-hellman-group14-sha256'
+    ],
+    'hostkey' => [
+        'rsa-sha2-256',
+        'rsa-sha2-512',
+        'ssh-rsa',
+        'ssh-dss'
+    ],
+    'client_to_server' => $methods,
+    'server_to_client' => $methods
+]);
+```
+
 ## Installation
 
 With [Composer](https://getcomposer.org/):
