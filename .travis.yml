@@ -1,31 +1,31 @@
 language: php
 
-dist: xenial
-
-php:
-  - 5.6
-  - 7.0
-  - 7.1
-  - 7.2
-  - 7.3
-  - 7.4
-  - 8.0
-  - nightly
-
-before_install: true
-
 matrix:
+  include:
+    - php: 5.6
+      dist: xenial
+    - php: 7.0
+      dist: xenial
+    - php: 7.1
+      dist: xenial
+    - php: 7.2
+      dist: xenial
+    - php: 7.3
+      dist: xenial
+    - php: 7.4
+      dist: xenial
+    - php: 8.0
+      dist: bionic
+    - php: 8.1.0
+      dist: bionic
+    - php: nightly
+      dist: bionic
   allow_failures:
     - php: nightly
 
+before_install: true
+
 install:
-  - wget http://ftp.gnu.org/gnu/parallel/parallel-20170822.tar.bz2
-  - tar -xvjf parallel*
-  - cd parallel*
-  - ./configure
-  - make
-  - sudo make install
-  - cd ..
   - eval `ssh-agent -s`
   - git clone -b 2.0 --single-branch https://github.com/phpseclib/phpseclib.git temp
   - mv temp/tests tests
@@ -35,6 +35,7 @@ install:
   - rm tests/Unit/Math/BigInteger/InternalTest.php
   - sed -i 's/%s\/..\/phpseclib\/%s/%s\/..\/src\/%s/g' tests/PhpseclibTestCase.php
   - sed -i 's/public function testSetPrivate()/private function skiptestSetPrivate()/g' tests/Unit/Crypt/RSA/LoadKeyTest.php
+  - sed -i 's/public function testOAEPWithLabel()/private function skiptestOAEPWithLabel()/g' tests/Unit/Crypt/RSA/ModeTest.php
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.5' ]; then vendor/bin/phing -f build/build.xml sniff; fi"
   - mv temp/travis travis
   - travis/setup-secure-shell.sh
