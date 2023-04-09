@@ -16,6 +16,7 @@
 
 namespace phpseclib\Crypt;
 
+use phpseclib3\Exception\BadDecryptionException;
 use phpseclib3\Exception\InconsistentSetupException;
 
 /**
@@ -62,6 +63,10 @@ abstract class Base
      * Encrypt / decrypt using the Cipher Feedback mode (8bit)
      */
     const MODE_CFB8 = 38;
+    /**
+     * Encrypt / decrypt using the Output Feedback mode (8bit)
+     */
+    const MODE_OFB8 = 7;
     /**
      * Encrypt / decrypt using the Output Feedback mode.
      *
@@ -207,6 +212,7 @@ abstract class Base
             self::MODE_CFB => 'cfb',
             self::MODE_CFB8 => 'cfb8',
             self::MODE_OFB => 'ofb',
+            self::MODE_OFB8 => 'ofb8',
             self::MODE_GCM => 'gcm',
             self::MODE_STREAM => 'stream'
         ];
@@ -387,7 +393,11 @@ abstract class Base
             $len = strlen($ciphertext);
             $block_size = $this->cipher->getBlockLengthInBytes();
             $ciphertext = str_pad($ciphertext, $len + ($block_size - $len % $block_size) % $block_size, chr(0));
-            return $this->cipher->decrypt($ciphertext);
+            try {
+                return $this->cipher->decrypt($ciphertext);
+            } catch (BadDecryptionException $e) {
+                return false;
+            }
         } catch (\Exception $e) {
             return false;
         }

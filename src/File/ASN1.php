@@ -33,6 +33,24 @@ namespace phpseclib\File;
 class ASN1 extends \phpseclib3\File\ASN1
 {
     /**
+     * Parse BER-encoding
+     *
+     * Serves a similar purpose to openssl's asn1parse
+     *
+     * @param string $encoded
+     * @return array
+     * @access public
+     */
+    public static function decodeBER($encoded)
+    {
+        $decoded = parent::decodeBER($encoded);
+        if ($decoded === null) {
+            return [false];
+        }
+        return $decoded;
+    }
+
+    /**
      * BER-decode the OID
      *
      * Called by _decode_ber()
