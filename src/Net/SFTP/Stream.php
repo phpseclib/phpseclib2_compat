@@ -64,7 +64,7 @@ class Stream extends \phpseclib3\Net\SFTP\Stream
      *
      * @access public
      */
-    public function __call($name, $args)
+    public function __call($name, array $args)
     {
         try {
             return parent::__call($name, $args);
