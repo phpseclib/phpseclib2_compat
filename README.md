@@ -1,6 +1,6 @@
 # phpseclib2_compat
 
-[![Build Status](https://travis-ci.com/phpseclib/phpseclib2_compat.svg?branch=1.0)](https://travis-ci.com/phpseclib/phpseclib2_compat)
+[![CI Status](https://github.com/phpseclib/phpseclib2_compat/actions/workflows/ci.yml/badge.svg?branch=1.0&event=push "CI Status")](https://github.com/phpseclib/phpseclib2_compat/actions/workflows/ci.yml?query=branch%3A1.0)
 
 phpseclib 2.0 polyfill built with phpseclib 3.0
 
