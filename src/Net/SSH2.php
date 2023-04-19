@@ -52,6 +52,67 @@ namespace phpseclib\Net;
 
 use phpseclib\Crypt\RSA;
 
+/**
+ * Pure-PHP implementation of SSHv2.
+ *
+ * @package SSHv2
+ * @method static void setCryptoEngine(string $engine)
+ * @method void sendIdentificationStringFirst()
+ * @method void sendIdentificationStringLast()
+ * @method void sendKEXINITFirst()
+ * @method void sendKEXINITLast()
+ * @method int|float getTimeout()
+ * @method void setTimeout(int|float $timeout)
+ * @method void setKeepAlive(int|float $interval)
+ * @method string getStdError()
+ * @method string|bool exec(string $command, callable ?$callback = null)
+ * @method bool requestAgentForwarding()
+ * @method string|bool|null read(string $expect = '', int $mode = self::READ_SIMPLE)
+ * @method void write(string $cmd)
+ * @method bool startSubsystem(string $subsystem)
+ * @method bool stopSubsystem()
+ * @method void reset()
+ * @method bool isTimeout()
+ * @method void disconnect()
+ * @method bool isConnected()
+ * @method bool isAuthenticated()
+ * @method bool ping()
+ * @method void enableQuietMode()
+ * @method void disableQuietMode()
+ * @method bool isQuietModeEnabled()
+ * @method void enablePTY()
+ * @method void disablePTY()
+ * @method bool isPTYEnabled()
+ * @method array|false|string getLog()
+ * @method string[] getErrors()
+ * @method ?string getLastError()
+ * @method string|false getServerIdentification()
+ * @method mixed[] getServerAlgorithms()
+ * @method static string[] getSupportedKEXAlgorithms()
+ * @method static string[] getSupportedHostKeyAlgorithms()
+ * @method static string[] getSupportedEncryptionAlgorithms()
+ * @method static string[] getSupportedMACAlgorithms()
+ * @method static string[] getSupportedCompressionAlgorithms()
+ * @method mixed[] getAlgorithmsNegotiated()
+ * @method void setTerminal(string $term)
+ * @method void setPreferredAlgorithms(mixed[] $methods)
+ * @method string getBannerMessage()
+ * @method string|false getServerPublicHostKey()
+ * @method false|int getExitStatus()
+ * @method int getWindowColumns()
+ * @method int getWindowRows()
+ * @method setWindowColumns(int $value)
+ * @method setWindowRows(int $value)
+ * @method setWindowSize(int $columns = 80, int $rows = 24)
+ * @method string getResourceId()
+ * @method static bool|SSH2 getConnectionByResourceId(string $id)
+ * @method static array<string, SSH2> getConnections()
+ * @method ?mixed[] getAuthMethodsToContinue()
+ * @method void enableSmartMFA()
+ * @method void disableSmartMFA()
+ * @author  Jim Wigginton <terrafrost@php.net>
+ * @access  public
+ */
 class SSH2
 {
     /**#@+
