@@ -39,6 +39,63 @@ namespace phpseclib\Net;
 
 use phpseclib\Crypt\RSA;
 
+/**
+ * Pure-PHP implementation of SFTP.
+ *
+ * @package SFTP
+ * @method void disableStatCache()
+ * @method void enableStatCache()
+ * @method void clearStatCache()
+ * @method void enablePathCanonicalization()
+ * @method void disablePathCanonicalization()
+ * @method void enableArbitraryLengthPackets()
+ * @method void disableArbitraryLengthPackets()
+ * @method string|false pwd()
+ * @method string|false realpath(string $path)
+ * @method bool chdir(string $dir)
+ * @method string[]|false nlist(string $dir = '.', bool $recursive = false)
+ * @method mixed[]|false rawlist(string $dir = '.', bool $recursive = false)
+ * @method void setListOrder(mixed ...$args)
+ * @method mixed[]|false stat(string $filename)
+ * @method mixed[]|false lstat(string $filename)
+ * @method bool truncate(string $filename, int $new_size)
+ * @method bool touch(string $filename, int $time = null, int $atime = null)
+ * @method bool chown(string $filename, int|string $uid, bool $recursive = false)
+ * @method bool chgrp(string $filename, int|string $gid, bool $recursive = false)
+ * @method bool chmod(int $mode, string $filename, bool $recursive = false)
+ * @method mixed readlink(string $link)
+ * @method bool symlink(string $target, string $link)
+ * @method bool mkdir(string $dir, int $mode = -1, bool $recursive = false)
+ * @method bool rmdir(string $dir)
+ * @method bool put(string $remote_file, string $data, int $mode = self::SOURCE_STRING, int $start = -1, int $local_start = -1, ?callable $progressCallback = null)
+ * @method string|bool get(string $remote_file, string $local_file = false, int $offset = 0, int $length = -1, ?callable $progressCallback = null)
+ * @method bool delete(string $path, bool $recursive = true)
+ * @method bool file_exists(string $path)
+ * @method bool is_dir(string $path)
+ * @method bool is_file(string $path)
+ * @method bool is_link(string $path)
+ * @method bool is_readable(string $path)
+ * @method bool is_writable(string $path)
+ * @method bool is_writeable(string $path)
+ * @method int|float|false fileatime(string $path)
+ * @method int|float|false filemtime(string $path)
+ * @method int|false fileperms(string $path)
+ * @method int|false fileowner(string $path)
+ * @method int|false filegroup(string $path)
+ * @method int|float|false filesize(string $path)
+ * @method string|false filetype(string $path)
+ * @method bool rename(string $oldname, string $newname)
+ * @method string[]|string getSFTPLog()
+ * @method string[] getSFTPErrors()
+ * @method string getLastSFTPError()
+ * @method mixed[]|false getSupportedVersions()
+ * @method int|false getNegotiatedVersion()
+ * @method void setPreferredVersion(int $version)
+ * @method void enableDatePreservation()
+ * @method void disableDatePreservation()
+ * @author  Jim Wigginton <terrafrost@php.net>
+ * @access  public
+ */
 class SFTP
 {
     /**#@+
