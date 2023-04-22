@@ -67,7 +67,7 @@ use phpseclib\Crypt\RSA;
  * @method string getStdError()
  * @method string|bool exec(string $command, callable ?$callback = null)
  * @method bool requestAgentForwarding()
- * @method string|bool|null read(string $expect = '', int $mode = self::READ_SIMPLE)
+ * @method string|bool|null read(string $expect = '', int $mode = SSH2::READ_SIMPLE)
  * @method void write(string $cmd)
  * @method bool startSubsystem(string $subsystem)
  * @method bool stopSubsystem()
