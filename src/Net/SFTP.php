@@ -67,7 +67,7 @@ use phpseclib\Crypt\RSA;
  * @method bool symlink(string $target, string $link)
  * @method bool mkdir(string $dir, int $mode = -1, bool $recursive = false)
  * @method bool rmdir(string $dir)
- * @method bool put(string $remote_file, string $data, int $mode = self::SOURCE_STRING, int $start = -1, int $local_start = -1, ?callable $progressCallback = null)
+ * @method bool put(string $remote_file, string $data, int $mode = SFTP::SOURCE_STRING, int $start = -1, int $local_start = -1, ?callable $progressCallback = null)
  * @method string|bool get(string $remote_file, string $local_file = false, int $offset = 0, int $length = -1, ?callable $progressCallback = null)
  * @method bool delete(string $path, bool $recursive = true)
  * @method bool file_exists(string $path)
