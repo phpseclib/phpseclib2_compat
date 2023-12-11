@@ -831,27 +831,23 @@ class RSA
      */
     public function encrypt($plaintext)
     {
-        if ($this->key instanceof PublicKey) {
-            switch ($this->encryptionMode) {
-                case self::ENCRYPTION_PKCS1:
-                    $len = ($this->key->getLength() - 88) >> 3;
-                    break;
-                case self::ENCRYPTION_NONE:
-                    $len = $this->key->getLength() >> 3;
-                    break;
-                //case self::ENCRYPTION_OAEP:
-                default:
-                    $len = ($this->key->getLength() - 2 * $this->key->getHash()->getLength() - 16) >> 3;
-            }
-            $plaintext = str_split($plaintext, $len);
-            $ciphertext = '';
-            foreach ($plaintext as $m) {
-                $ciphertext.= $this->key->encrypt($m);
-            }
-            return $ciphertext;
+        switch ($this->encryptionMode) {
+            case self::ENCRYPTION_PKCS1:
+                $len = ($this->key->getLength() - 88) >> 3;
+                break;
+            case self::ENCRYPTION_NONE:
+                $len = $this->key->getLength() >> 3;
+                break;
+            //case self::ENCRYPTION_OAEP:
+            default:
+                $len = ($this->key->getLength() - 2 * $this->key->getHash()->getLength() - 16) >> 3;
         }
-
-        return false;
+        $plaintext = str_split($plaintext, $len);
+        $ciphertext = '';
+        foreach ($plaintext as $m) {
+            $ciphertext.= $this->key->encrypt($m);
+        }
+        return $ciphertext;
     }
 
     /**
@@ -864,23 +860,19 @@ class RSA
      */
     public function decrypt($ciphertext)
     {
-        if ($this->key instanceof PrivateKey) {
-            $len = $this->key->getLength() >> 3;
-            $ciphertext = str_split($ciphertext, $len);
-            $ciphertext[count($ciphertext) - 1] = str_pad($ciphertext[count($ciphertext) - 1], $len, chr(0), STR_PAD_LEFT);
+        $len = $this->key->getLength() >> 3;
+        $ciphertext = str_split($ciphertext, $len);
+        $ciphertext[count($ciphertext) - 1] = str_pad($ciphertext[count($ciphertext) - 1], $len, chr(0), STR_PAD_LEFT);
 
-            $plaintext = '';
-            foreach ($ciphertext as $c) {
-                try {
-                    $plaintext.= $this->key->decrypt($c);
-                } catch (\Exception $e) {
-                    return false;
-                }
+        $plaintext = '';
+        foreach ($ciphertext as $c) {
+            try {
+                $plaintext.= $this->key->decrypt($c);
+            } catch (\Exception $e) {
+                return false;
             }
-            return $plaintext;
         }
-
-        return false;
+        return $plaintext;
     }
 
     /**
