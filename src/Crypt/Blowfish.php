@@ -47,20 +47,20 @@ namespace phpseclib\Crypt;
 class Blowfish extends Base
 {
     /**
-     * Sets the key length.
+     * Turns key lengths, be they valid or invalid, to valid key lengths
      *
-     * Key lengths can be between 32 and 448 bits.
-     *
-     * @access public
      * @param int $length
+     * @access private
+     * @return int
      */
-    public function setKeyLength($length)
+    protected function calculateNewKeyLength($length)
     {
-        if ($length < 32) {
-            $length = 32;
-        } elseif ($length > 448) {
-            $length = 448;
+        switch (true) {
+            case $length < 32:
+                return 32;
+            case $length > 448:
+                return 448;
         }
-        parent::setKeyLength($length);
+        return $length;
     }
 }

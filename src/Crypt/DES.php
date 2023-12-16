@@ -52,13 +52,14 @@ namespace phpseclib\Crypt;
 class DES extends Base
 {
     /**
-     * Dummy method
+     * Turns key lengths, be they valid or invalid, to valid key lengths
      *
-     * @access public
      * @param int $length
+     * @access private
+     * @return int
      */
-    public function setKeyLength($length)
+    protected function calculateNewKeyLength($length)
     {
-        parent::setKeyLength(64);
+        return 64;
     }
 }

@@ -64,47 +64,6 @@ namespace phpseclib\Crypt;
 class Rijndael extends Base
 {
     /**
-     * Sets the key length.
-     *
-     * Valid key lengths are 128, 160, 192, 224, and 256.  If the length is less than 128, it will be rounded up to
-     * 128.  If the length is greater than 128 and invalid, it will be rounded down to the closest valid amount.
-     *
-     * Note: phpseclib extends Rijndael (and AES) for using 160- and 224-bit keys but they are officially not defined
-     *       and the most (if not all) implementations are not able using 160/224-bit keys but round/pad them up to
-     *       192/256 bits as, for example, mcrypt will do.
-     *
-     *       That said, if you want be compatible with other Rijndael and AES implementations,
-     *       you should not setKeyLength(160) or setKeyLength(224).
-     *
-     * Additional: In case of 160- and 224-bit keys, phpseclib will/can, for that reason, not use
-     *             the mcrypt php extension, even if available.
-     *             This results then in slower encryption.
-     *
-     * @access public
-     * @param int $length
-     */
-    public function setKeyLength($length)
-    {
-        switch (true) {
-            case $length <= 128:
-                $length = 128;
-                break;
-            case $length <= 160:
-                $length = 160;
-                break;
-            case $length <= 192:
-                $length = 192;
-                break;
-            case $length <= 224:
-                $length = 224;
-                break;
-            default:
-                $length = 256;
-        }
-        parent::setKeyLength($length);
-    }
-
-    /**
      * Sets the block length
      *
      * Valid block lengths are 128, 160, 192, 224, and 256.  If the length is less than 128, it will be rounded up to
@@ -122,5 +81,28 @@ class Rijndael extends Base
             $length = 4;
         }
         $this->cipher->setBlockLength($length);
+    }
+
+    /**
+     * Turns key lengths, be they valid or invalid, to valid key lengths
+     *
+     * @param int $length
+     * @access private
+     * @return int
+     */
+    protected function calculateNewKeyLength($length)
+    {
+        switch (true) {
+            case $length <= 128:
+                return 128;
+            case $length <= 160:
+                return 160;
+            case $length <= 192:
+                return 192;
+            case $length <= 224:
+                return 224;
+            default:
+                return 256;
+        }
     }
 }

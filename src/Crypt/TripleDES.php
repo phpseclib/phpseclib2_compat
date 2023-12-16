@@ -96,26 +96,21 @@ class TripleDES extends Base
     }
 
     /**
-     * Sets the key length
+     * Turns key lengths, be they valid or invalid, to valid key lengths
      *
-     * Keys can be between 1 and 256 bytes long.
-     *
-     * @access public
      * @param int $length
+     * @access private
+     * @return int
      */
-    public function setKeyLength($length)
+    protected function calculateNewKeyLength($length)
     {
         switch (true) {
             case $length <= 64:
-                $length = 64;
-                break;
+                return 64;
             case $length <= 128:
-                $length = 128;
-                break;
+                return 128;
             default:
-                $length = 192;
+                return 192;
         }
-
-        parent::setKeyLength($length);
     }
 }
