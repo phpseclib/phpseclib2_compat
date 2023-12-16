@@ -54,20 +54,21 @@ namespace phpseclib\Crypt;
 class RC4 extends Base
 {
     /**
-     * Sets the key length
+     * Turns key lengths, be they valid or invalid, to valid key lengths
      *
-     * Keys can be between 1 and 256 bytes long.
-     *
-     * @access public
      * @param int $length
+     * @access private
+     * @return int
      */
-    public function setKeyLength($length)
+    protected function calculateNewKeyLength($length)
     {
-        if ($length < 8) {
-            $length = 8;
-        } elseif ($length > 2048) {
-            $length = 2048;
+        switch (true) {
+            case $length < 8:
+                return 8;
+            case $length > 2048:
+                return 2048;
         }
-        parent::setKeyLength($length);
+
+        return $length;
     }
 }

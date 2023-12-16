@@ -73,23 +73,22 @@ class RC2 extends Base
     }
 
     /**
-     * Sets the key length.
+     * Turns key lengths, be they valid or invalid, to valid key lengths
      *
-     * Valid key lengths are 8 to 1024.
-     * Calling this function after setting the key has no effect until the next
-     *  \phpseclib\Crypt\RC2::setKey() call.
-     *
-     * @access public
-     * @param int $length in bits
+     * @param int $length
+     * @access private
+     * @return int
      */
-    public function setKeyLength($length)
+    protected function calculateNewKeyLength($length)
     {
-        if ($length < 8) {
-            $length = 8;
-        } elseif ($length > 1024) {
-            $length = 1024;
+        switch (true) {
+            case $length < 8:
+                return 8;
+            case $length > 1024:
+                return 1024;
         }
-        parent::setKeyLength($length);
+
+        return $length;
     }
 
     /**

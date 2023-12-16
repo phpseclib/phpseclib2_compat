@@ -263,7 +263,7 @@ abstract class Base
     {
         // algorithms that have a fixed key length should override this with a method that does nothing
         $this->changed = true;
-        $this->key_length = $length;
+        $this->key_length = static::calculateNewKeyLength($length);
         $this->explicit_key_length = true;
     }
 
@@ -307,7 +307,7 @@ abstract class Base
     {
         $this->key = $key;
         if (!$this->explicit_key_length) {
-            $this->key_length = strlen($key) << 3;
+            $this->key_length = static::calculateNewKeyLength(strlen($key) << 3);
         }
         $this->changed = true;
     }

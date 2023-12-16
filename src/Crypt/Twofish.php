@@ -47,26 +47,21 @@ namespace phpseclib\Crypt;
 class Twofish extends Base
 {
     /**
-     * Sets the key length
+     * Turns key lengths, be they valid or invalid, to valid key lengths
      *
-     * Keys can be between 1 and 256 bytes long.
-     *
-     * @access public
      * @param int $length
+     * @access private
+     * @return int
      */
-    public function setKeyLength($length)
+    protected function calculateNewKeyLength($length)
     {
         switch (true) {
             case $length <= 128:
-                $length = 128;
-                break;
+                return 128;
             case $length <= 192:
-                $length = 192;
-                break;
+                return 192;
             default:
-                $length = 256;
+                return 256;
         }
-
-        parent::setKeyLength($length);
     }
 }
