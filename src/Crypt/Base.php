@@ -148,6 +148,15 @@ abstract class Base
     protected $key = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
 
     /**
+     * Password Parameters
+     *
+     * @see self::setPassword()
+     * @var array
+     * @access private
+     */
+    protected $password = [];
+
+    /**
      * The Key Length (in bytes)
      *
      * @see self::setKeyLength()
@@ -306,6 +315,7 @@ abstract class Base
     public function setKey($key)
     {
         $this->key = $key;
+        $this->password = [];
         if (!$this->explicit_key_length) {
             $this->key_length = static::calculateNewKeyLength(strlen($key) << 3);
         }
@@ -330,6 +340,7 @@ abstract class Base
      */
     public function setPassword($password, $method = 'pbkdf2')
     {
+        $this->password = func_get_args();
         $this->cipher->setKeyLength($this->key_length);
         $this->cipher->setPassword(...func_get_args());
     }
@@ -415,9 +426,13 @@ abstract class Base
         if ($this->explicit_key_length) {
             $this->cipher->setKeyLength($this->key_length);
         }
-        $key_length = $this->key_length >> 3;
-        $key = str_pad(substr($this->key, 0, $key_length), $key_length, "\0");
-        $this->cipher->setKey($key);
+        if (empty($this->password)) {
+            $key_length = $this->key_length >> 3;
+            $key = str_pad(substr($this->key, 0, $key_length), $key_length, "\0");
+            $this->cipher->setKey($key);
+        } else {
+            $this->cipher->setPassword(...$this->password);
+        }
         if (!$this->ivSet) {
             $this->setIV('');
         }
