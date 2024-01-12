@@ -105,4 +105,33 @@ class Rijndael extends Base
                 return 256;
         }
     }
+
+    /**
+     * Sets the password.
+     *
+     * Depending on what $method is set to, setPassword()'s (optional) parameters are as follows:
+     *     {@link http://en.wikipedia.org/wiki/PBKDF2 pbkdf2} or pbkdf1:
+     *         $hash, $salt, $count, $dkLen
+     *
+     *         Where $hash (default = sha1) currently supports the following hashes: see: Crypt/Hash.php
+     *
+     * @see Crypt/Hash.php
+     * @param string $password
+     * @param string $method
+     * @return bool
+     * @access public
+     * @internal Could, but not must, extend by the child Crypt_* class
+     */
+    public function setPassword($password, $method = 'pbkdf2')
+    {
+        $this->cipher->setKeyLength($this->key_length);
+        $args = func_get_args();
+        if (in_array($method, ['pbkdf1', 'pbkdf2']) && !isset($args[3])) {
+            $args[1] = $method;
+            $args[2] = isset($args[2]) ? $args[2] : 'sha1';
+            $args[3] = 'phpseclib';
+        }
+        $this->password = $args;
+        $this->cipher->setPassword(...$args);
+    }
 }
