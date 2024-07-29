@@ -80,7 +80,7 @@ class Rijndael extends Base
         } elseif ($length < 4) {
             $length = 4;
         }
-        $this->cipher->setBlockLength($length);
+        $this->cipher->setBlockLength($length << 5);
     }
 
     /**
