@@ -56,8 +56,22 @@ namespace phpseclib\Crypt;
  * @author  Jim Wigginton <terrafrost@php.net>
  * @access  public
  */
-class AES extends Base
+class AES extends Rijndael
 {
+    /**
+     * Dummy function
+     *
+     * Since \phpseclib\Crypt\AES extends \phpseclib\Crypt\Rijndael, this function is, technically, available, but it doesn't do anything.
+     *
+     * @see \phpseclib\Crypt\Rijndael::setBlockLength()
+     * @access public
+     * @param int $length
+     */
+    function setBlockLength($length)
+    {
+        return;
+    }
+
     /**
      * Turns key lengths, be they valid or invalid, to valid key lengths
      *
