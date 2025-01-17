@@ -108,10 +108,7 @@ use phpseclib\Crypt\RSA;
  * @method string|false realpath(string $path)
  * @method bool chdir(string $dir)
  * @method string[]|false nlist(string $dir = '.', bool $recursive = false)
- * @method mixed[]|false rawlist(string $dir = '.', bool $recursive = false)
  * @method void setListOrder(mixed ...$args)
- * @method mixed[]|false stat(string $filename)
- * @method mixed[]|false lstat(string $filename)
  * @method bool truncate(string $filename, int $new_size)
  * @method bool touch(string $filename, int $time = null, int $atime = null)
  * @method bool chown(string $filename, int|string $uid, bool $recursive = false)
@@ -235,24 +232,6 @@ class SFTP
     }
 
     /**
-     * Parse Attributes
-     *
-     * See '7.  File Attributes' of draft-ietf-secsh-filexfer-13 for more info.
-     *
-     * @param string $response
-     * @return array
-     * @access private
-     */
-    protected function parseAttributes(&$response)
-    {
-        $r = $this->sftp->parseAttributes($response);
-        if (isset($r['mode'])) {
-            $r['permissions'] = $r['mode'];
-        }
-        return $r;
-    }
-
-    /**
      * Defines how nlist() and rawlist() will be sorted - if at all.
      *
      * If sorting is enabled directories and files will be sorted independently with
@@ -312,6 +291,72 @@ class SFTP
     public function getSFTPObject()
     {
         return $this->sftp;
+    }
+
+        /**
+     * Returns general information about a file.
+     *
+     * Returns an array on success and false otherwise.
+     *
+     * @param string $filename
+     * @return array|false
+     */
+    public function stat($filename)
+    {
+        $result = $this->sftp->stat($filename);
+        if (isset($result['mode'])) {
+            $result['permissions'] = $result['mode'];
+        }
+        return $result;
+    }
+
+    /**
+     * Returns general information about a file or symbolic link.
+     *
+     * Returns an array on success and false otherwise.
+     *
+     * @param string $filename
+     * @return array|false
+     */
+    public function lstat($filename)
+    {
+        $result = $this->sftp->lstat($filename);
+        if (isset($result['mode'])) {
+            $result['permissions'] = $result['mode'];
+        }
+        return $result;
+    }
+
+    /**
+     * Returns a detailed list of files in the given directory
+     *
+     * @param string $dir
+     * @param bool $recursive
+     * @return array|false
+     */
+    public function rawlist($dir = '.', $recursive = false)
+    {
+        $result = $this->sftp->rawlist($dir, $recursive);
+        if (!$result) {
+            return false;
+        }
+
+        return self::rawlistHelper($result);
+    }
+
+    /**
+     * Adds permissions variable to each array element
+     */
+    private static function rawlistHelper(array $files)
+    {
+        foreach ($files as $file=>&$data) {
+            if (is_array($data)) {
+                $data = self::rawlistHelper($data);
+            } else {
+                $data->permissions = $data->mode;
+            }
+        }
+        return $files;
     }
 
     /**
