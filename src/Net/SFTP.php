@@ -293,7 +293,7 @@ class SFTP
         return $this->sftp;
     }
 
-        /**
+    /**
      * Returns general information about a file.
      *
      * Returns an array on success and false otherwise.
