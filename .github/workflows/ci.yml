@@ -24,7 +24,7 @@ jobs:
             -   name: Composer Install
                 run: composer install --no-interaction --no-cache
             -   name: Make Tests Compatiable With PHPUnit 9+
-                if: matrix.php-version != '5.6' && matrix.php-version != '7.0' && matrix.php-version != '7.1' && matrix.php-version != '7.2'
+                if: matrix.php-version != '5.6' && matrix.php-version != '7.0' && matrix.php-version != '7.1'
                 run: php tests/make_compatible_with_phpunit9.php
             -   name: Setup Secure Shell Functional Tests
                 if: matrix.os == 'ubuntu-latest'
