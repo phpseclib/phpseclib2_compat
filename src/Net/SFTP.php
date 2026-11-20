@@ -373,6 +373,7 @@ class SFTP
             return $this->sftp->$name(...$args);
         } catch (\Exception $e) {
             user_error($e->getMessage());
+            return false;
         }
     }
 }
