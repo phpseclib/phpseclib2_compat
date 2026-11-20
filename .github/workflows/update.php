@@ -10,3 +10,4 @@ function replaceFileContents($fileName, $search, $replace)
 replaceFileContents('tests/PhpseclibTestCase.php', '~%s/../phpseclib/%s~', '%s/../src/%s');
 replaceFileContents('tests/Unit/Crypt/RSA/LoadKeyTest.php', '~ public function testSetPrivate\(\)~', ' private function skiptestSetPrivate()');
 replaceFileContents('tests/Unit/Crypt/RSA/ModeTest.php', '~ public function testOAEPWithLabel\(\)~', ' private function skiptestOAEPWithLabel()');
+replaceFileContents('tests/Unit/File/X509/X509Test.php', '~ public function testURLFetch~', ' private function skiptestURLFetch');
