@@ -349,11 +349,14 @@ class SFTP
      */
     private static function rawlistHelper(array $files)
     {
-        foreach ($files as $file=>&$data) {
-            if (is_array($data)) {
-                $data = self::rawlistHelper($data);
+        foreach ($files as &$data) {
+            if (!is_array($data)) {
+                continue;
+            }
+            if (isset($data['mode']) && !is_array($data['mode'])) {
+                $data['permissions'] = $data['mode'];
             } else {
-                $data->permissions = $data->mode;
+                $data = self::rawlistHelper($data);
             }
         }
         return $files;
