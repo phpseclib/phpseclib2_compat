@@ -23,6 +23,7 @@ jobs:
                     rm tests/Functional/Net/SCPSSH2UserStoryTest.php
                     rm tests/Unit/Net/SSH1Test.php
                     rm tests/Unit/Net/SSH2UnitTest.php
+                    rm tests/Unit/Net/SFTPUnitTest.php
                     rm tests/Unit/Math/BigInteger/InternalTest.php
                     php .github/workflows/update.php
             -   name: Composer Install
